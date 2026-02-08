@@ -11,6 +11,8 @@ description = "Goals plugin for Time Tracker"
 crate-type = ["cdylib"]
 
 [dependencies]
-time-tracker-plugin-sdk = { path = "../../plugin-sdk" }
-serde.workspace = true
-serde_json.workspace = true
+# SDK dependency - use git until published to crates.io
+# For local development in monorepo, use: time-tracker-plugin-sdk = { path = "../../plugin-sdk" }
+time-tracker-plugin-sdk = { git = "https://github.com/bthos/time-tracker-app", tag = "plugin-sdk-v0.2.7" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
