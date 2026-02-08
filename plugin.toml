@@ -11,8 +11,8 @@ library_name = "goals_plugin"
 entry_point = "_plugin_create"
 
 [frontend]
-entry = "goals/index.js"
-components = ["GoalsDashboard", "GoalEditor", "GoalProgress"]
+entry = "frontend/index.js"
+components = ["Goals", "GoalForm", "GoalCard", "GoalAlerts", "GoalProgressWidget"]
 
 [build]
 targets = ["x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu", "x86_64-apple-darwin"]
