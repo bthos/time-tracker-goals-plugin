@@ -1,14 +1,12 @@
 [plugin]
-id = "goals-plugin"
-name = "Goals"
+name = "goals-plugin"
+display_name = "Goals"
 version = "1.0.0"
 description = "Goal tracking"
 author = "TimeTracker"
 
 [backend]
-crate_name = "time_tracker_goals_plugin"
 library_name = "goals_plugin"
-entry_point = "_plugin_create"
 
 [frontend]
 entry = "goals/index.js"

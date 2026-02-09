@@ -36,7 +36,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Cache cargo registry
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
@@ -57,32 +57,43 @@ jobs:
           cp plugin.toml release/plugin.toml
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact-name }}
-          path: release/${{ matrix.artifact-name }}
+          name: goals-plugin-${{ matrix.target }}
+          path: release
 
   release:
     name: Create Release
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
 
       - name: Create release archive
+        shell: bash
         run: |
           mkdir -p release
-          cp plugin.toml release/
+          # Copy plugin manifest (from any artifact)
+          for dir in artifacts/*/; do
+            if [ -f "$dir/plugin.toml" ]; then
+              cp "$dir/plugin.toml" release/
+              break
+            fi
+          done
+          # Copy backend libraries
           for dir in artifacts/*/; do
             cp "$dir"/*.dll "$dir"/*.so "$dir"/*.dylib release/ 2>/dev/null || true
           done
+          # Create zip archive
           cd release
           zip -r ../goals-plugin-${{ github.ref_name }}.zip .
           cd ..

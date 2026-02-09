@@ -28,15 +28,106 @@ impl Plugin for GoalsPlugin {
         &self.info
     }
     
-    fn initialize(&mut self, _api: &dyn PluginAPIInterface) -> Result<(), String> {
+    fn initialize(&mut self, api: &dyn PluginAPIInterface) -> Result<(), String> {
         // Register schema extension for goals table
-        // Note: Query filters registration temporarily disabled - needs backend-specific types
-        // Will be re-enabled in Phase 3 when query filters are fully migrated to SDK types
-        // Query filters for filtering activities by goal criteria will be registered then
+        use time_tracker_plugin_sdk::extensions::{TableColumn, ForeignKey};
         
-        // TODO: Register goals table schema extension
-        // For now, the table is created in core database.rs
-        // This will be moved here in Phase 3
+        api.register_schema_extension(
+            EntityType::Activity, // Using Activity as entity type, though goals is separate
+            vec![
+                SchemaChange::CreateTable {
+                    table: "goals".to_string(),
+                    columns: vec![
+                        TableColumn {
+                            name: "id".to_string(),
+                            column_type: "INTEGER PRIMARY KEY AUTOINCREMENT".to_string(),
+                            default: None,
+                            foreign_key: None,
+                            nullable: false,
+                            primary_key: true,
+                        },
+                        TableColumn {
+                            name: "goal_type".to_string(),
+                            column_type: "TEXT NOT NULL".to_string(),
+                            default: None,
+                            foreign_key: None,
+                            nullable: false,
+                            primary_key: false,
+                        },
+                        TableColumn {
+                            name: "target_seconds".to_string(),
+                            column_type: "INTEGER NOT NULL".to_string(),
+                            default: None,
+                            foreign_key: None,
+                            nullable: false,
+                            primary_key: false,
+                        },
+                        TableColumn {
+                            name: "category_id".to_string(),
+                            column_type: "INTEGER".to_string(),
+                            default: None,
+                            foreign_key: Some(ForeignKey {
+                                table: "categories".to_string(),
+                                column: "id".to_string(),
+                            }),
+                            nullable: true,
+                            primary_key: false,
+                        },
+                        TableColumn {
+                            name: "project_id".to_string(),
+                            column_type: "INTEGER".to_string(),
+                            default: None,
+                            foreign_key: Some(ForeignKey {
+                                table: "projects".to_string(),
+                                column: "id".to_string(),
+                            }),
+                            nullable: true,
+                            primary_key: false,
+                        },
+                        TableColumn {
+                            name: "start_date".to_string(),
+                            column_type: "INTEGER NOT NULL".to_string(),
+                            default: None,
+                            foreign_key: None,
+                            nullable: false,
+                            primary_key: false,
+                        },
+                        TableColumn {
+                            name: "end_date".to_string(),
+                            column_type: "INTEGER".to_string(),
+                            default: None,
+                            foreign_key: None,
+                            nullable: true,
+                            primary_key: false,
+                        },
+                        TableColumn {
+                            name: "created_at".to_string(),
+                            column_type: "INTEGER NOT NULL".to_string(),
+                            default: None,
+                            foreign_key: None,
+                            nullable: false,
+                            primary_key: false,
+                        },
+                        TableColumn {
+                            name: "active".to_string(),
+                            column_type: "BOOLEAN DEFAULT TRUE".to_string(),
+                            default: Some("TRUE".to_string()),
+                            foreign_key: None,
+                            nullable: true,
+                            primary_key: false,
+                        },
+                        TableColumn {
+                            name: "name".to_string(),
+                            column_type: "TEXT".to_string(),
+                            default: None,
+                            foreign_key: None,
+                            nullable: true,
+                            primary_key: false,
+                        },
+                    ],
+                },
+            ],
+        )?;
         
         Ok(())
     }
