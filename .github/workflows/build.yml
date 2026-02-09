@@ -93,6 +93,13 @@ jobs:
           for dir in artifacts/*/; do
             cp "$dir"/*.dll "$dir"/*.so "$dir"/*.dylib release/ 2>/dev/null || true
           done
+          # Copy frontend bundle (from any artifact directory)
+          for dir in artifacts/*/; do
+            if [ -d "$dir/frontend" ]; then
+              cp -r "$dir/frontend" release/ 2>/dev/null || true
+              break
+            fi
+          done
           # Create zip archive
           cd release
           zip -r ../goals-plugin-${{ github.ref_name }}.zip .
